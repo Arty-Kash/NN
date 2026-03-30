@@ -10,6 +10,19 @@ import json
 import asyncio
 from fastapi.responses import StreamingResponse
 
+# Irisオープンデータの利用
+from sklearn.datasets import load_iris
+
+# Irisデータセットを読み込む
+iris = load_iris()
+
+# 特徴量（4つの数値）を変数 iris_data にセット
+iris_data = iris.data
+
+# ラベル（0, 1, 2 の数値）を変数 iris_target にセット
+iris_target = iris.target
+
+
 
 app = FastAPI()
 
