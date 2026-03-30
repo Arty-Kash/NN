@@ -73,6 +73,7 @@ async def message_stream():
 @app.get("/status")
 async def get_status():
     return state
+"""
 
 # --- 静的ファイルの配信 ---
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -80,4 +81,3 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def read_index():
     return FileResponse("static/index.html")
-"""
