@@ -5,12 +5,6 @@ import threading
 import time
 import numpy as np
 
-# for SSE
-import json
-import asyncio
-from fastapi.responses import StreamingResponse
-
-
 app = FastAPI()
 
 # --- 学習シミュレーションの状態 ---
@@ -40,21 +34,6 @@ async def startup_event():
     thread = threading.Thread(target=train_simulation, daemon=True)
     thread.start()
 
-
-@app.get("/stream")
-async def message_stream():
-    async def event_generator():
-        while True:
-            # 状態をJSON文字列に変換し、SSEの形式（data: <内容>\n\n）で送る
-            json_data = json.dumps(state)
-            yield f"data: {json_data}\n\n"
-            # 0.5秒待機
-            await asyncio.sleep(0.5)
-
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
-
-
-""" fetchリクエストを待ち受け
 # --- APIエンドポイント ---
 @app.get("/status")
 async def get_status():
@@ -66,4 +45,4 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def read_index():
     return FileResponse("static/index.html")
-"""
+    

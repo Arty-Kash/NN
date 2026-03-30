@@ -45,34 +45,7 @@ svg.selectAll(".node")
     .attr("cy", d => d.y)
     .attr("r", 15);
 
-
-// 4. SSEによるデータ受信の設定
-const eventSource = new EventSource('/stream');
-
-eventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    // テキスト更新
-    document.getElementById('epoch').innerText = data.epoch;
-    document.getElementById('loss').innerText = data.loss.toFixed(4);
-
-    // 重みに基づいてリンクをアニメーション更新
-    linkElements
-        .transition().duration(300)
-        .attr("stroke-width", (d, i) => Math.abs(data.weights[i]) * 8 + 1)
-        .attr("stroke", (d, i) => data.weights[i] > 0 ? "#4285f4" : "#ea4335");
-};
-
-eventSource.onerror = (err) => {
-    console.error("SSE error:", err);
-    eventSource.close();
-};
-
-
-
-
-/*
-Fetchのデータ更新ループ
+// 4. データ更新ループ
 async function update() {
     try {
         const res = await fetch('/status');
@@ -95,4 +68,3 @@ async function update() {
 
 // 0.5秒ごとにAPIを叩く
 setInterval(update, 500);
-*/
