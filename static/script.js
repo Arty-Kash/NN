@@ -49,6 +49,8 @@ svg.selectAll(".node")
 // 4. SSEによるデータ受信の設定
 const eventSource = new EventSource('/stream');
 
+// EventSource を使ってサーバーからのストリームを常時監視
+// データが届くたびに onmessage が発火し、D3.js の transition を使って描画を更新
 eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data);
 

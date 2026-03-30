@@ -41,6 +41,7 @@ async def startup_event():
     thread.start()
 
 
+# streamという口を開け、0.5秒ごとに最新のstateをストリームとして流し続ける
 @app.get("/stream")
 async def message_stream():
     async def event_generator():
