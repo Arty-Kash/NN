@@ -23,8 +23,24 @@ iris_data = iris.data
 iris_target = iris.target
 
 
-
 app = FastAPI()
+
+
+# ブラウザから fetch された際にデータを返す窓口
+@app.get("/iris-data")
+async def get_iris_data():
+    # 150行分のデータを整形してリスト形式で返す
+    combined_data = []
+    for i in range(len(iris_data)):
+        combined_data.append({
+            "sepal_length": iris_data[i][0],
+            "sepal_width": iris_data[i][1],
+            "petal_length": iris_data[i][2],
+            "petal_width": iris_data[i][3],
+            "species": iris.target_names[iris_target[i]] # 数値を品種名に変換
+        })
+    return combined_data
+
 
 # --- 学習シミュレーションの状態 ---
 # 入力3 -> 隠れ4 -> 出力2 (計20本の重み)

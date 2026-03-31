@@ -72,6 +72,46 @@ eventSource.onerror = (err) => {
 
 
 
+// 5. Irisデータの取得と表示（起動時に一度だけ実行）
+async function loadIrisData() {
+    try {
+        const res = await fetch('/iris-data');
+        const data = await res.json();
+
+        // 左エリアを取得してテーブルを作成
+        const leftArea = d3.select("#left-area");
+        leftArea.append("h2").text("Iris Dataset");
+
+        const table = leftArea.append("table")
+            .style("width", "100%")
+            .style("border-collapse", "collapse")
+            .style("font-size", "0.8rem");
+
+        // ヘッダーの作成
+        const header = table.append("thead").append("tr");
+        ["Sepal L", "Sepal W", "Petal L", "Petal W", "Species"].forEach(text => {
+            header.append("th").text(text).style("border-bottom", "1px solid #ccc");
+        });
+
+        // データの表示（150行分）
+        const tbody = table.append("tbody");
+        data.forEach(d => {
+            const row = tbody.append("tr");
+            row.append("td").text(d.sepal_length);
+            row.append("td").text(d.sepal_width);
+            row.append("td").text(d.petal_length);
+            row.append("td").text(d.petal_width);
+            row.append("td").text(d.species);
+        });
+
+    } catch (err) {
+        console.error("Failed to load Iris data:", err);
+    }
+}
+
+// 実行
+loadIrisData();
+
 
 /*
 Fetchのデータ更新ループ
