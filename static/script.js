@@ -88,13 +88,44 @@ async function loadIrisData() {
             .style("border-collapse", "collapse")
             .style("font-size", "0.8rem");
 
+
         // ヘッダーの作成
+        // 特徴名をボタンに
+        const header = table.append("thead").append("tr");
+        ["Sepal L", "Sepal W", "Petal L", "Petal W", "Species"].forEach((text, i) => {
+            const th = header.append("th")
+                            .style("border-bottom", "1px solid #ccc")
+                            .style("text-align", "left");
+
+            // 最初の4つ（特徴量）だけをボタン化する
+            if (i < 4) {
+                th.append("span")
+                    .text(text)
+                    .attr("class", "header-button selected") // 初期状態は選択中(selected)
+                    .on("click", function() {
+                        // 現在のクラスを確認し、selected と unselected を切り替える
+                        const btn = d3.select(this);
+                        const isSelected = btn.classed("selected");
+                        btn.classed("selected", !isSelected);
+                        btn.classed("unselected", isSelected);
+                    });
+            } else {
+                // 品種名（Species）はボタンにしない
+                th.text(text).style("padding", "5px");
+            }
+        });
+
+
+        /* 特徴名が単なる文字列の場合
         const header = table.append("thead").append("tr");
         ["Sepal L", "Sepal W", "Petal L", "Petal W", "Species"].forEach(text => {
             header.append("th").text(text)
                         .style("border-bottom", "1px solid #ccc")
                         .style("text-align", "left");
         });
+        */
+
+
 
         // データの表示（150行分）
         const tbody = table.append("tbody");

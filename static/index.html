@@ -42,6 +42,33 @@
         .node { stroke: #333; stroke-width: 2px; fill: white; }
         .link { stroke-opacity: 0.6; }
         #info { margin: 5px; font-size: 1.2rem; }
+
+/* ヘッダーボタンの基本スタイル */
+.header-button {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    text-align: left;
+    display: block; /* セルいっぱいに広げる */
+}
+
+/* 選択されている時の色（青） */
+.selected {
+    background-color: #4285f4;
+    color: white;
+    border-color: #3367d6;
+}
+
+/* 選択されていない時の色（グレー） */
+.unselected {
+    background-color: #e0e0e0;
+    color: #757575;
+}
+
+
+
     </style>
 </head>
 <body>
