@@ -2,6 +2,13 @@ const width = 600;
 const height = 400;
 const svg = d3.select("#viz");
 
+// 品種の色の定義（共通で使用）
+const speciesColors = {
+    "setosa": "#4285f4",     // 青
+    "versicolor": "#ea4335", // 赤
+    "virginica": "#34a853"   // 緑
+};
+
 // ネットワーク構成 (入力3, 隠れ4, 出力2)
 const layerSizes = [3, 4, 2];
 const nodes = [];
@@ -125,8 +132,6 @@ async function loadIrisData() {
         });
         */
 
-
-
         // データの表示（150行分）
         const tbody = table.append("tbody");
         data.forEach(d => {
@@ -135,13 +140,55 @@ async function loadIrisData() {
             row.append("td").text(d.sepal_width.toFixed(1));
             row.append("td").text(d.petal_length.toFixed(1));
             row.append("td").text(d.petal_width.toFixed(1));
-            row.append("td").text(d.species);
+
+            // 【修正】品種名に色を付ける
+            row.append("td")
+                .text(d.species)
+                .style("color", speciesColors[d.species]) // 定義した色を適用
+                .style("font-weight", "bold");
+            // row.append("td").text(d.species);
         });
 
     } catch (err) {
         console.error("Failed to load Iris data:", err);
     }
 }
+
+
+
+// 2. 右上エリア：2次元プロットの初期化
+const plotWidth = 600;
+const plotHeight = 400;
+const plotMargin = { top: 20, right: 20, bottom: 40, left: 40 };
+
+const plotSvg = d3.select("#right-top-area")
+    .append("svg")
+    .attr("id", "plot-viz")
+    .attr("width", plotWidth)
+    .attr("height", plotHeight)
+    .style("background", "white")
+    .style("border", "1px solid #ccc")
+    .style("margin", "0 20px 20px 20px"); // 上 0, 右 20, 下 20, 左 20
+    //.style("margin", "20px");
+
+// 軸を描画するためのグループを作成
+const g = plotSvg.append("g")
+    .attr("transform", `translate(${plotMargin.left},${plotMargin.top})`);
+
+// 初期状態の軸（0.0〜1.0 の仮の範囲）
+const xScale = d3.scaleLinear().domain([0, 1]).range([0, plotWidth - plotMargin.left - plotMargin.right]);
+const yScale = d3.scaleLinear().domain([0, 1]).range([plotHeight - plotMargin.top - plotMargin.bottom, 0]);
+
+const xAxis = g.append("g")
+    .attr("class", "x-axis")
+    .attr("transform", `translate(0, ${plotHeight - plotMargin.top - plotMargin.bottom})`)
+    .call(d3.axisBottom(xScale));
+
+const yAxis = g.append("g")
+    .attr("class", "y-axis")
+    .call(d3.axisLeft(yScale));
+
+
 
 // 実行
 loadIrisData();
