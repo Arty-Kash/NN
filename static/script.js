@@ -80,27 +80,30 @@ async function loadIrisData() {
 
         // 左エリアを取得してテーブルを作成
         const leftArea = d3.select("#left-area");
-        leftArea.append("h2").text("Iris Dataset");
+        leftArea.append("h2").style("margin-left" , "50px").text("Iris Dataset");
 
         const table = leftArea.append("table")
-            .style("width", "100%")
+            .style("width", "60%")
+            .style("margin-left" , "50px")
             .style("border-collapse", "collapse")
             .style("font-size", "0.8rem");
 
         // ヘッダーの作成
         const header = table.append("thead").append("tr");
         ["Sepal L", "Sepal W", "Petal L", "Petal W", "Species"].forEach(text => {
-            header.append("th").text(text).style("border-bottom", "1px solid #ccc");
+            header.append("th").text(text)
+                        .style("border-bottom", "1px solid #ccc")
+                        .style("text-align", "left");
         });
 
         // データの表示（150行分）
         const tbody = table.append("tbody");
         data.forEach(d => {
             const row = tbody.append("tr");
-            row.append("td").text(d.sepal_length);
-            row.append("td").text(d.sepal_width);
-            row.append("td").text(d.petal_length);
-            row.append("td").text(d.petal_width);
+            row.append("td").text(d.sepal_length.toFixed(1));
+            row.append("td").text(d.sepal_width.toFixed(1));
+            row.append("td").text(d.petal_length.toFixed(1));
+            row.append("td").text(d.petal_width.toFixed(1));
             row.append("td").text(d.species);
         });
 
