@@ -28,7 +28,8 @@
 
         /* 右上エリア */
         #right-top-area {
-            flex: 1;
+         /* flex: 1; */
+            height: 500px;
         }
 
         /* 右下エリア：ここにNNを描画 */
@@ -40,7 +41,7 @@
         #viz { background: white; border: 1px solid #ccc; border-radius: 8px; }
         .node { stroke: #333; stroke-width: 2px; fill: white; }
         .link { stroke-opacity: 0.6; }
-        #info { margin: 20px; font-size: 1.2rem; }
+        #info { margin: 5px; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -55,10 +56,16 @@
 
             <!-- 右下エリア -->
             <div id="right-bottom-area">
-                <h1>NN学習プロセス可視化</h1>
+                <div id="info-header">
+                    <span style="font-weight: bold; margin-right: 15px;">NN学習プロセス可視化</span>
+                    Epoch: <span id="epoch">0</span> | Loss: <span id="loss">0.000</span>
+                </div>
+                <!--
+                <h3>NN学習プロセス可視化</h3>
                 <div id="info">
                     Epoch: <span id="epoch">0</span> | Loss: <span id="loss">0.000</span>
                 </div>
+                -->
                 <svg id="viz" width="600" height="400"></svg>
             </div>
         </div>
