@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>NN Visualization</title>
+    
+    <!-- Data Driven Documentライブラリ：動的コンテンツの描画-->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    
     <style>
         body { font-family: sans-serif; margin: 0; background-color: #f4f4f9; }
         
@@ -18,7 +21,31 @@
         #left-area {
             /*width: 600px;*/
             flex: 1;
+            border-right: 1px solid gray;
         }
+
+        /* ヘッダーボタンの基本スタイル */
+        .header-button {
+            cursor: pointer;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            text-align: left;
+            display: block; /* セルいっぱいに広げる */
+        }
+        /* 選択されている時の色（青） */
+        .selected {
+            background-color: #4285f4;
+            color: white;
+            border-color: #3367d6;
+        }
+        /* 選択されていない時の色（グレー） */
+        .unselected {
+            background-color: #e0e0e0;
+            color: #757575;
+        }
+
 
         /* 右半分を管理するコンテナ：上下分割 */
         #right-container {
@@ -32,6 +59,7 @@
          /* flex: 1; */
             height: 500px;
             text-align: center;
+            border-bottom: 1px solid gray;
         }
 
         /* 右下エリア：ここにNNを描画 */
@@ -40,36 +68,23 @@
             text-align: center;
         }
 
-        #viz { background: white; border: 1px solid #ccc; border-radius: 8px; }
-        .node { stroke: #333; stroke-width: 2px; fill: white; }
-        .link { stroke-opacity: 0.6; }
-        #info { margin: 5px; font-size: 1.2rem; }
-
-/* ヘッダーボタンの基本スタイル */
-.header-button {
-    cursor: pointer;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-    text-align: left;
-    display: block; /* セルいっぱいに広げる */
-}
-
-/* 選択されている時の色（青） */
-.selected {
-    background-color: #4285f4;
-    color: white;
-    border-color: #3367d6;
-}
-
-/* 選択されていない時の色（グレー） */
-.unselected {
-    background-color: #e0e0e0;
-    color: #757575;
-}
-
-
+        /* NNのパーツ */
+        #viz {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .node {
+            stroke: #333;
+            stroke-width: 2px; fill: white;
+        }
+        .link {
+            stroke-opacity: 0.6;
+        }
+        #info {
+            margin: 5px;
+            font-size: 1.2rem;
+        }
 
     </style>
 </head>
@@ -91,12 +106,6 @@
                     <span style="font-weight: bold; margin-right: 15px;">NN学習プロセス可視化</span>
                     Epoch: <span id="epoch">0</span> | Loss: <span id="loss">0.000</span>
                 </div>
-                <!--
-                <h3>NN学習プロセス可視化</h3>
-                <div id="info">
-                    Epoch: <span id="epoch">0</span> | Loss: <span id="loss">0.000</span>
-                </div>
-                -->
                 <svg id="viz" width="600" height="400"></svg>
             </div>
         </div>

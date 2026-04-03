@@ -13,18 +13,14 @@ from fastapi.responses import StreamingResponse
 # Irisオープンデータの利用
 from sklearn.datasets import load_iris
 
-# Irisデータセットを読み込む
-iris = load_iris()
-
-# 特徴量（4つの数値）を変数 iris_data にセット
-iris_data = iris.data
-
-# ラベル（0, 1, 2 の数値）を変数 iris_target にセット
-iris_target = iris.target
-
 
 app = FastAPI()
 
+
+# 1. Irisデータの読込みと配信
+iris = load_iris()          # Irisデータセットを読込む
+iris_data = iris.data       # 特徴量（4つの数値）を変数 iris_data にセット
+iris_target = iris.target   # ラベル（0, 1, 2 の数値）を変数 iris_target にセット
 
 # ブラウザから fetch された際にデータを返す窓口
 @app.get("/iris-data")
@@ -42,12 +38,14 @@ async def get_iris_data():
     return combined_data
 
 
+# 2. NN学習の更新と結果の配信
 # --- 学習シミュレーションの状態 ---
 # 入力3 -> 隠れ4 -> 出力2 (計20本の重み)
 state = {
     "epoch": 0,
     "loss": 1.0,
     "weights": np.random.uniform(-1, 1, 20).tolist()
+                        # 入力数×隠れ層数 ＋ 隠れ層数×出力数
 }
 
 def train_simulation():
@@ -84,14 +82,15 @@ async def message_stream():
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
-""" fetchリクエストを待ち受け
+""" fetchの場合：fetchリクエストを待ち受け
 # --- APIエンドポイント ---
 @app.get("/status")
 async def get_status():
     return state
 """
 
-# --- 静的ファイルの配信 ---
+
+# 3. 静的ファイルの配信 ---
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
