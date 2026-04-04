@@ -71,6 +71,24 @@
             margin: 5px;
             font-size: 1.2rem;
         }
+        /* 学習ボタンの基本スタイル */
+        #train-btn {
+            cursor: pointer;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            ransition: background-color 0.3s;
+        }
+        /* 開始状態（青） */
+        .btn-start {
+            background-color: #4285f4;
+        }
+        /* 停止状態（赤） */
+        .btn-stop {
+            background-color: #ea4335;
+        }   
 
         /* NNのパーツ */
         #viz {
@@ -108,7 +126,7 @@
                     Epoch: <span id="epoch">0</span> | Loss: <span id="loss">0.000</span>
 
                     <!-- 【追加】学習制御用のボタン（機能は未実装） -->
-                    <button id="train-btn" style="margin-left: 20px;">学習開始</button>
+                    <button id="train-btn" class="btn-start" style="margin-left: 20px;">学習開始</button>
                 </div>
                 <svg id="viz" width="600" height="400"></svg>
             </div>

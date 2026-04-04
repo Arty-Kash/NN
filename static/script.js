@@ -193,11 +193,16 @@ eventSource.onerror = (err) => {
 d3.select("#train-btn").on("click", function() {
     const btn = d3.select(this);
     
-    // 現在のテキストを確認し、交互に書き換える
     if (btn.text() === "学習開始") {
-        btn.text("学習停止");
+        // 停止状態へ移行
+        btn.text("学習停止")
+           .classed("btn-start", false)
+           .classed("btn-stop", true);
     } else {
-        btn.text("学習開始");
+        // 開始状態へ移行
+        btn.text("学習開始")
+           .classed("btn-start", true)
+           .classed("btn-stop", false);
     }
 });
 
