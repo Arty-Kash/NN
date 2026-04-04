@@ -39,6 +39,7 @@ async def get_iris_data():
 
 
 # 2. NN学習の更新と結果の配信
+
 # --- 学習シミュレーションの状態 ---
 # 入力3 -> 隠れ4 -> 出力2 (計20本の重み)
 state = {
@@ -62,11 +63,10 @@ def train_simulation():
         time.sleep(0.5) # 0.5秒ごとに更新
 
 # サーバー起動時に学習スレッドを開始
-@app.on_event("startup")
+@app.lifespan("startup")        # @app.on_event("startup")  on_eventは非推奨らしい
 async def startup_event():
     thread = threading.Thread(target=train_simulation, daemon=True)
     thread.start()
-
 
 # streamという口を開け、0.5秒ごとに最新のstateをストリームとして流し続ける
 @app.get("/stream")
