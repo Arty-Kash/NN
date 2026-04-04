@@ -49,16 +49,20 @@ state = {
                         # 入力数×隠れ層数 ＋ 隠れ層数×出力数
 }
 
+# 学習中かどうかを保持するフラグ（最初は False = 停止）
+is_running = False
+
 def train_simulation():
     """バックグラウンドで重みを更新し続ける関数"""
     global state
     while True:
-        state["epoch"] += 1
-        # Lossが徐々に減るシミュレーション
-        state["loss"] *= 0.99
-        # 重みが少しずつ変化するシミュレーション
-        new_weights = [w + np.random.normal(0, 0.05) for w in state["weights"]]
-        state["weights"] = new_weights
+        if is_running:
+            state["epoch"] += 1
+            # Lossが徐々に減るシミュレーション
+            state["loss"] *= 0.99
+            # 重みが少しずつ変化するシミュレーション
+            new_weights = [w + np.random.normal(0, 0.05) for w in state["weights"]]
+            state["weights"] = new_weights
         
         time.sleep(0.5) # 0.5秒ごとに更新
 
@@ -68,6 +72,18 @@ async def startup_event():
     thread = threading.Thread(target=train_simulation, daemon=True)
     thread.start()
 
+# --- 操作用エンドポイント ---
+@app.post("/start")
+async def start_train():
+    global is_running
+    is_running = True
+    return {"status": "ok"}
+
+@app.post("/stop")
+async def stop_train():
+    global is_running
+    is_running = False
+    return {"status": "ok"}
 
 # streamという口を開け、0.5秒ごとに最新のstateをストリームとして流し続ける
 @app.get("/stream")

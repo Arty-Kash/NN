@@ -194,11 +194,17 @@ d3.select("#train-btn").on("click", function() {
     const btn = d3.select(this);
     
     if (btn.text() === "学習開始") {
+        // サーバーに開始を命令
+        fetch('/start', { method: 'POST' });
+
         // 停止状態へ移行
         btn.text("学習停止")
            .classed("btn-start", false)
            .classed("btn-stop", true);
     } else {
+        // サーバーに停止を命令
+        fetch('/stop', { method: 'POST' });
+        
         // 開始状態へ移行
         btn.text("学習開始")
            .classed("btn-start", true)
