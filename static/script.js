@@ -189,7 +189,17 @@ eventSource.onerror = (err) => {
 };
 
 
-
+// ⑤学習制御ボタンのトグル動作（表示の切り替えのみ）
+d3.select("#train-btn").on("click", function() {
+    const btn = d3.select(this);
+    
+    // 現在のテキストを確認し、交互に書き換える
+    if (btn.text() === "学習開始") {
+        btn.text("学習停止");
+    } else {
+        btn.text("学習開始");
+    }
+});
 
 
 /*

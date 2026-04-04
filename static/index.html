@@ -71,7 +71,7 @@
             margin: 5px;
             font-size: 1.2rem;
         }
-        
+
         /* NNのパーツ */
         #viz {
             background: white;
@@ -106,6 +106,9 @@
                 <div id="info-header">  <!--タイトルとepochなどを1行に-->
                     <span style="font-weight: bold; margin-right: 15px;">NN学習プロセス可視化</span>
                     Epoch: <span id="epoch">0</span> | Loss: <span id="loss">0.000</span>
+
+                    <!-- 【追加】学習制御用のボタン（機能は未実装） -->
+                    <button id="train-btn" style="margin-left: 20px;">学習開始</button>
                 </div>
                 <svg id="viz" width="600" height="400"></svg>
             </div>
