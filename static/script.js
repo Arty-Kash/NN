@@ -101,7 +101,6 @@ const plotSvg = d3.select("#right-top-area")
     .style("background", "white")
     .style("border", "1px solid #ccc")
     .style("margin", "0 20px 20px 20px"); // 上 0, 右 20, 下 20, 左 20
-    //.style("margin", "20px");
 
 // 軸を描画するためのグループを作成
 const g = plotSvg.append("g")

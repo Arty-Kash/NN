@@ -14,6 +14,7 @@ from fastapi.responses import StreamingResponse
 from sklearn.datasets import load_iris
 
 
+# FastAPIという設計図を使って、一つの『Webアプリ専用マシン』を組み立てて、それに app という名前をつける
 app = FastAPI()
 
 
