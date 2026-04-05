@@ -28,8 +28,8 @@ async function loadIrisData() {
         leftArea.append("h2").style("margin-left" , "50px").text("Iris Dataset");
 
         const table = leftArea.append("table")
-            .style("width", "60%")
-            .style("margin-left" , "50px")
+            .style("width", "90%")
+            .style("margin-left" , "20px")
             .style("border-collapse", "collapse")
             .style("font-size", "0.8rem");
 
@@ -61,26 +61,28 @@ async function loadIrisData() {
 
         // データの表示（150行分）
         const tbody = table.append("tbody");
-        data.forEach(d => {
-            const row = tbody.append("tr");
+        data.forEach((d, i) => {
+            const row = tbody.append("tr").datum(d);
             row.append("td").text(d.sepal_length.toFixed(1));
             row.append("td").text(d.sepal_width.toFixed(1));
             row.append("td").text(d.petal_length.toFixed(1));
             row.append("td").text(d.petal_width.toFixed(1));
             row.append("td").text(d.species).style("color", speciesColors[d.species]).style("font-weight", "bold");
 
+            /*
             // 品種名に色を付ける
             row.append("td")
                 .text(d.species)
                 .style("color", speciesColors[d.species]) // 定義した色を適用
                 .style("font-weight", "bold");
             // row.append("td").text(d.species);
+            */
 
             // 推論列の作成
             const predTd = row.append("td").attr("class", "prediction-text");
             if (d.is_test) {
                 // テストデータ用：後で書き換えるためにクラスを付与
-                predTd.attr("class", "prediction-text prediction-cell");
+                predTd.attr("class", "prediction-text prediction-cell").text("...");
             } else {
                 // 学習データ用：「T」を表示
                 predTd.text("T").style("text-align", "center").style("color", "#ccc");
