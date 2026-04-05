@@ -2,8 +2,8 @@ const width = 600;
 const height = 400;
 const svg = d3.select("#viz");
 
-// ネットワーク構成 (入力3, 隠れ4, 出力2)
-const layerSizes = [3, 4, 2];
+// ネットワーク構成 (入力4, 隠れ5, 出力3)
+const layerSizes = [4, 5, 3];
 
 
 
