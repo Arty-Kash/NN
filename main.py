@@ -140,6 +140,25 @@ async def startup_event():
 
 @app.get("/iris-data")
 async def get_iris_data():
+    # 150行分のデータを整形してリスト形式で返す
+    combined_data = []
+    for i in range(len(shuffled_x)):
+        # 150件のうち、120番目以降（第5グループ）をテスト用(is_test=True)とする
+        is_test = i >= 120
+        
+        combined_data.append({
+            "sepal_length": shuffled_x[i][0],
+            "sepal_width": shuffled_x[i][1],
+            "petal_length": shuffled_x[i][2],
+            "petal_width": shuffled_x[i][3],
+            "species": iris.target_names[shuffled_y[i]],
+            "is_test": is_test  # 【追加】テスト用かどうかのフラグ
+        })
+    return combined_data
+
+""" 150サンプルを，そのまま返す場合
+@app.get("/iris-data")
+async def get_iris_data():
     combined_data = []
     for i in range(len(iris_data)):
         combined_data.append({
@@ -150,6 +169,7 @@ async def get_iris_data():
             "species": iris.target_names[iris_target[i]]
         })
     return combined_data
+"""
 
 @app.post("/start")
 async def start_train():
@@ -172,6 +192,16 @@ async def message_stream():
             await asyncio.sleep(0.5)
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+@app.get("/predict")
+async def get_predict():
+    # テストデータ30件に対して現在の重みで順伝播（予測）を行う
+    output = nn_model.forward(test_x)
+    # 最も確率が高い品種のインデックスを取得
+    predictions = np.argmax(output, axis=1)
+    # インデックス(0,1,2)を品種名("setosa"等)に変換してリストで返す
+    pred_names = [iris.target_names[p] for p in predictions]
+    return pred_names
+    
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")

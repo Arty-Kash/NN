@@ -36,7 +36,7 @@ async function loadIrisData() {
 
         // Irisテーブルのヘッダーの作成．特徴名をボタンに
         const header = table.append("thead").append("tr");
-        ["Sepal L", "Sepal W", "Petal L", "Petal W", "Species"].forEach((text, i) => {
+        ["Sepal L", "Sepal W", "Petal L", "Petal W", "Species", "Predict"].forEach((text, i) => {
             const th = header.append("th")
                             .style("border-bottom", "1px solid #ccc")
                             .style("text-align", "left");
@@ -67,6 +67,7 @@ async function loadIrisData() {
             row.append("td").text(d.sepal_width.toFixed(1));
             row.append("td").text(d.petal_length.toFixed(1));
             row.append("td").text(d.petal_width.toFixed(1));
+            row.append("td").text(d.species).style("color", speciesColors[d.species]).style("font-weight", "bold");
 
             // 品種名に色を付ける
             row.append("td")
@@ -74,12 +75,50 @@ async function loadIrisData() {
                 .style("color", speciesColors[d.species]) // 定義した色を適用
                 .style("font-weight", "bold");
             // row.append("td").text(d.species);
+
+            // 推論列の作成
+            const predTd = row.append("td").attr("class", "prediction-text");
+            if (d.is_test) {
+                // テストデータ用：後で書き換えるためにクラスを付与
+                predTd.attr("class", "prediction-text prediction-cell");
+            } else {
+                // 学習データ用：「T」を表示
+                predTd.text("T").style("text-align", "center").style("color", "#ccc");
+            }
         });
+
+        // 初回起動時の予測結果（案A：デタラメな予測）を表示
+        updatePredictions();
 
     } catch (err) {
         console.error("Failed to load Iris data:", err);
     }
 }
+
+
+// 予測結果を取得して表を更新する関数
+async function updatePredictions() {
+    try {
+        const res = await fetch('/predict');
+        const predictions = await res.json(); // 30件の名前リスト
+        
+        // クラス名 "prediction-cell" がついたセル（30個）をすべて選択
+        const cells = d3.selectAll(".prediction-cell");
+        
+        cells.each(function(d, i) {
+            const cell = d3.select(this);
+            const predName = predictions[i];
+            const actualName = cell.datum().species; // 元のデータ(正解)を参照
+
+            cell.text(predName)
+                .style("color", speciesColors[predName])
+                .classed("bg-wrong", predName !== actualName); // 正解と異なれば背景を赤く
+        });
+    } catch (err) {
+        console.error("Failed to update predictions:", err);
+    }
+}
+
 
 // 実行
 loadIrisData();
@@ -209,6 +248,9 @@ d3.select("#train-btn").on("click", function() {
         btn.text("学習開始")
            .classed("btn-start", true)
            .classed("btn-stop", false);
+
+        // 【追加】停止した瞬間に最新の予測結果を取得して表示
+        updatePredictions();
     }
 });
 
