@@ -47,13 +47,44 @@ class NeuralNetwork:
         self.b1 = np.zeros((1, hidden_size))
         self.b2 = np.zeros((1, output_size))
 
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
+
+    def softmax(self, x):
+        exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
+        return exp_x / np.sum(exp_x, axis=1, keepdims=True)
+
     def forward(self, x):
-        """順伝播（現在は枠組みのみ）"""
-        pass
+        # 1. 入力層から隠れ層へ
+        self.z1 = np.dot(x, self.w1) + self.b1
+        self.a1 = self.sigmoid(self.z1)
+        # 2. 隠れ層から出力層へ
+        self.z2 = np.dot(self.a1, self.w2) + self.b2
+        self.a2 = self.softmax(self.z2)
+        return self.a2
 
     def backward(self, x, y, output, learning_rate):
-        """逆伝播（ステップ2で実装）"""
-        pass
+        # 誤差の計算 (Cross Entropyの微分)
+        m = y.shape[0]
+        dz2 = output - y # 出力層の誤差
+        
+        # 隠れ層2 -> 出力層3 の重み更新量
+        dw2 = np.dot(self.a1.T, dz2) / m
+        db2 = np.sum(dz2, axis=0, keepdims=True) / m
+        
+        # 隠れ層の誤差 (シグモイド関数の微分を含む)
+        da1 = np.dot(dz2, self.w2.T)
+        dz1 = da1 * (self.a1 * (1 - self.a1))
+        
+        # 入力層4 -> 隠れ層5 の重み更新量
+        dw1 = np.dot(x.T, dz1) / m
+        db1 = np.sum(dz1, axis=0, keepdims=True) / m
+        
+        # 重みの更新 (勾配降下法)
+        self.w1 -= learning_rate * dw1
+        self.w2 -= learning_rate * dw2
+        self.b1 -= learning_rate * db1
+        self.b2 -= learning_rate * db2
 
 # NNインスタンスの生成（入力4, 隠れ5, 出力3）
 nn_model = NeuralNetwork(input_size=4, hidden_size=5, output_size=3)
@@ -72,17 +103,33 @@ state = {
 is_running = False
 
 def train_simulation():
-    """バックグラウンドで重みを更新し続ける関数（現在はまだシミュレーション）"""
     global state
+    # ラベル（0, 1, 2）をOne-Hot形式に変換（例: 0 -> [1, 0, 0]）
+    train_y_onehot = np.eye(3)[train_y]
+    
+    learning_rate = 0.1 # 学習率
+
     while True:
         if is_running:
+            # 1. 順伝播（予測）
+            output = nn_model.forward(train_x)
+            
+            # 2. 誤差（Loss）の計算：交差エントロピー誤差
+            m = train_y.shape[0]
+            loss = -np.sum(train_y_onehot * np.log(output + 1e-8)) / m
+            
+            # 3. 逆伝播（学習）
+            nn_model.backward(train_x, train_y_onehot, output, learning_rate)
+            
+            # stateの更新（フロントエンド配信用）
             state["epoch"] += 1
-            state["loss"] *= 0.99
-            # 重みが少しずつ変化するシミュレーション
-            new_weights = [w + np.random.normal(0, 0.01) for w in state["weights"]]
-            state["weights"] = new_weights
+            state["loss"] = float(loss)
+            # 現在の重みをリスト化して反映
+            state["weights"] = np.concatenate([nn_model.w1.flatten(), nn_model.w2.flatten()]).tolist()
         
-        time.sleep(0.5)
+        time.sleep(0.1) # 学習スピードを少し上げるために待機時間を短縮
+
+        
 
 @app.on_event("startup")
 async def startup_event():
