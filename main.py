@@ -29,10 +29,11 @@ groups_y = np.array_split(shuffled_y, 5)
 
 # ステップ2以降で使用するための変数定義
 # 第1グループ（30件）をテスト用、第2〜5グループ（120件）を学習用とする
+test_x  = groups_x[0]
+test_y  = groups_y[0]
 train_x = np.concatenate(groups_x[1:])
 train_y = np.concatenate(groups_y[1:])
-test_x = groups_x[0]
-test_y = groups_y[0]
+
 
 # 第1〜4グループ（120件）を学習用、第5グループ（30件）をテスト用とする
 # train_x = np.concatenate(groups_x[0:4])
