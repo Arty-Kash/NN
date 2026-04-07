@@ -155,20 +155,6 @@ async def get_iris_data():
         })
     return combined_data
 
-""" 150サンプルを，そのまま返す場合
-@app.get("/iris-data")
-async def get_iris_data():
-    combined_data = []
-    for i in range(len(iris_data)):
-        combined_data.append({
-            "sepal_length": iris_data[i][0],
-            "sepal_width": iris_data[i][1],
-            "petal_length": iris_data[i][2],
-            "petal_width": iris_data[i][3],
-            "species": iris.target_names[iris_target[i]]
-        })
-    return combined_data
-"""
 
 @app.post("/start")
 async def start_train():
