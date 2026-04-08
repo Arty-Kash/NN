@@ -117,10 +117,28 @@ def train_simulation():
     # --- 【追加】ウォームアップ処理 ---
     # 初回のコンパイル（翻訳作業）をここで済ませておく
     # 10個のサンプル、5つの特徴量（隠れ層の数と同じ）のダミーデータを作成
-    dummy_data = np.random.rand(20, 5)
-    reducer.fit_transform(dummy_data)
+    #dummy_data = np.random.rand(20, 5)
+    #reducer.fit_transform(dummy_data)
     # --------------------------------
 
+
+    # --- 【修正】初期状態の計算（ここを while の外で実行） ---
+    # 150サンプルの初期状態（デタラメな重み）での隠れ層出力を取得
+    nn_model.forward(shuffled_x)
+    initial_hidden = nn_model.a1
+    
+    # UMAPで2次元に圧縮（ここで初回コンパイルも同時に完了する）
+    embedding = reducer.fit_transform(initial_hidden)
+    
+    # 0.0〜1.0 に正規化
+    min_val = embedding.min(axis=0)
+    max_val = embedding.max(axis=0)
+    normalized = (embedding - min_val) / (max_val - min_val + 1e-8)
+    
+    # 初回の座標をセット
+    state["umap_coords"] = normalized.tolist()
+    # ----------------------------------------------------
+    
     while True:
         if is_running:
             # 1. 順伝播（予測）

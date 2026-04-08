@@ -145,8 +145,6 @@ const yPlotScale = d3.scaleLinear().domain([0, 1]).range([plotHeight - plotMargi
 
 // 星形（テストデータ用）のジェネレーター
 const starGenerator = d3.symbol().type(d3.symbolStar).size(100);
-//    .attr("stroke-width", 2)
-//    .attr("stroke", black);
 
 
 // 3. 右下エリア
@@ -212,6 +210,12 @@ eventSource.onmessage = (event) => {
 
     // --- UMAPプロットの更新（修正） ---
     if (data.umap_coords && data.umap_coords.length > 0) {
+        // 最初のデータが届いたらLoadingを消す
+        const loadingOverlay = d3.select("#loading-overlay");
+        if (!loadingOverlay.empty()) {
+            loadingOverlay.remove(); // 要素そのものを削除する
+        }
+
         const dots = plotSvg.selectAll(".dot")
             .data(data.umap_coords);
 

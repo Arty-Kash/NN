@@ -70,6 +70,17 @@
             height: 500px;
             text-align: center;
             border-bottom: 1px solid gray;
+            position: relative; /* 子要素（Loading）の基準点になるために必須！ */
+        }
+
+        #loading-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* これが重要！文字自身の幅の半分だけ戻す */
+            font-weight: bold;
+            color: #888;
+            pointer-events: none; /* 下にあるSVGの操作を邪魔しないため */
         }
 
         /* 右下エリア：ここにNNを描画 */
@@ -89,7 +100,7 @@
             border-radius: 4px;
             color: white;
             font-weight: bold;
-            ransition: background-color 0.3s;
+            transition: background-color 0.3s;
         }
         /* 開始状態（青） */
         .btn-start {
@@ -126,7 +137,10 @@
         <div id="right-container">
             <!-- 右上エリア -->
             <div id="right-top-area">
-                <h3 id="plot-title" style="margin: 30px 0 5px 0;">Irisデータ プロット</h3>
+                <h3 id="plot-title" style="margin: 30px 0 5px 0;">Irisデータ分析　 UMAPプロット</h3>
+                <div id="loading-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; color: #888;">
+                    UMAPを準備中（数秒かかります）...
+                </div>
             </div>
 
             <!-- 右下エリア -->
