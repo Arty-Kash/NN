@@ -86,7 +86,7 @@ async function loadIrisData() {
         });
 
         // 初回起動時の予測結果（案A：デタラメな予測）を表示
-        // updatePredictions();
+        updatePredictions();
 
     } catch (err) {
         console.error("Failed to load Iris data:", err);
