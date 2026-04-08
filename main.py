@@ -112,12 +112,12 @@ def train_simulation():
     learning_rate = 0.1 # 学習率
 
     # UMAPの計算器（2次元に圧縮）
-    reducer = umap.UMAP(n_components=2, random_state=42)
+    reducer = umap.UMAP(n_components=2, random_state=42, n_jobs=1)
 
     # --- 【追加】ウォームアップ処理 ---
     # 初回のコンパイル（翻訳作業）をここで済ませておく
     # 10個のサンプル、5つの特徴量（隠れ層の数と同じ）のダミーデータを作成
-    dummy_data = np.random.rand(10, 5)
+    dummy_data = np.random.rand(20, 5)
     reducer.fit_transform(dummy_data)
     # --------------------------------
 

@@ -227,8 +227,16 @@ eventSource.onmessage = (event) => {
                 return record.is_test ? starGenerator() : d3.symbol().type(d3.symbolCircle).size(64)();
             })
             .attr("fill", (d, i) => speciesColors[irisRecords[i].species])
-            .attr("stroke", "#333")
-            .attr("stroke-width", 1);
+            //.attr("stroke", "#333")
+            .attr("stroke", (d, i) => {
+                const record = irisRecords[i];
+                return record.is_test ? "#000" : "#444";
+            })
+            //.attr("stroke-width", 1);
+            .attr("stroke-width", (d, i) => {
+                const record = irisRecords[i];
+                return record.is_test ? 2 : 1;
+            })
     }
 };
 
