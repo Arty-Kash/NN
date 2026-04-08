@@ -95,22 +95,25 @@ async function loadIrisData() {
 
 
 // 予測結果を取得して表を更新する関数
-async function updatePredictions() {
+async function updatePredictions(predictions = null) {
     try {
-        const res = await fetch('/predict');
-        const predictions = await res.json(); // 30件の名前リスト
+        // 1. 引数がなければ、サーバーから最新の予測を取得する
+        if (!predictions) {
+            const res = await fetch('/predict');
+            predictions = await res.json();
+        }
         
-        // クラス名 "prediction-cell" がついたセル（30個）をすべて選択
+        // 2. 画面のセルを更新する（ここはこれまでのロジックを再利用）
         const cells = d3.selectAll(".prediction-cell");
         
         cells.each(function(d, i) {
             const cell = d3.select(this);
             const predName = predictions[i];
-            const actualName = cell.datum().species; // 元のデータ(正解)を参照
+            const actualName = cell.datum().species;
 
             cell.text(predName)
                 .style("color", speciesColors[predName])
-                .classed("bg-wrong", predName !== actualName); // 正解と異なれば背景を赤く
+                .classed("bg-wrong", predName !== actualName);
         });
     } catch (err) {
         console.error("Failed to update predictions:", err);
@@ -215,6 +218,9 @@ eventSource.onmessage = (event) => {
         if (!loadingOverlay.empty()) {
             loadingOverlay.remove(); // 要素そのものを削除する
         }
+        
+        // 届いた予測結果を使ってテーブルを更新（fetchは行わない）
+        updatePredictions(data.predictions);
 
         const dots = plotSvg.selectAll(".dot")
             .data(data.umap_coords);

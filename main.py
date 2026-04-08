@@ -99,7 +99,8 @@ state = {
     "epoch": 0,
     "loss": 1.0,
     "weights": initial_weights, 
-    "umap_coords": [] # 150個の [x, y] リストが入る
+    "umap_coords": [],  # 150個の [x, y] リストが入る
+    "predictions": []
 }
 
 is_running = False
@@ -124,7 +125,8 @@ def train_simulation():
 
     # --- 【修正】初期状態の計算（ここを while の外で実行） ---
     # 150サンプルの初期状態（デタラメな重み）での隠れ層出力を取得
-    nn_model.forward(shuffled_x)
+    # nn_model.forward(shuffled_x)
+    all_outputs = nn_model.forward(shuffled_x)
     initial_hidden = nn_model.a1
     
     # UMAPで2次元に圧縮（ここで初回コンパイルも同時に完了する）
@@ -137,8 +139,13 @@ def train_simulation():
     
     # 初回の座標をセット
     state["umap_coords"] = normalized.tolist()
+
+    # 3. 【追加】初期状態の予測結果（30件分）を取得
+    test_predictions_idx = np.argmax(all_outputs[:30], axis=1)
+    test_pred_names = [iris.target_names[p] for p in test_predictions_idx]
+    state["predictions"] = test_pred_names  # ここで予測もセット！
     # ----------------------------------------------------
-    
+
     while True:
         if is_running:
             # 1. 順伝播（予測）
@@ -159,11 +166,19 @@ def train_simulation():
         
             # --- UMAP計算ロジック（50エポックごと） ---
             if state["epoch"] % 50 == 0:
+
+
                 # 全150サンプルの隠れ層（a1）の出力を取得
                 # ※forwardを呼ぶとインスタンスの self.a1 が更新される
-                nn_model.forward(shuffled_x)
-                hidden_outputs = nn_model.a1 # (150, 5) の行列
+                # nn_model.forward(shuffled_x)
+
+                # 1. 全150サンプルの順伝播を実行
+                # ※UMAP用の隠れ層(a1)と、推論用の出力層(a2)の両方が更新されます
+                all_outputs = nn_model.forward(shuffled_x)
                 
+                # UMAP更新
+                hidden_outputs = nn_model.a1 # (150, 5) の行列
+
                 # UMAPで (150, 5) -> (150, 2) に圧縮
                 embedding = reducer.fit_transform(hidden_outputs)
                 
@@ -173,6 +188,16 @@ def train_simulation():
                 normalized = (embedding - min_val) / (max_val - min_val + 1e-8)
                 
                 state["umap_coords"] = normalized.tolist()
+
+
+                # 3. 【追加】テストデータ（最初の30件）の予測結果を取得
+                # all_outputs[:30] はテストデータの30行分の確率（ソフトマックス出力）
+                test_predictions_idx = np.argmax(all_outputs[:30], axis=1)
+                # インデックス(0,1,2)を品種名("setosa"等)に変換
+                test_pred_names = [iris.target_names[p] for p in test_predictions_idx]
+                
+                # stateにセット（フロントエンドへ送る用）
+                state["predictions"] = test_pred_names
 
         time.sleep(0.1) # 学習スピードを少し上げるために待機時間を短縮
 
