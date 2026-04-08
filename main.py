@@ -114,6 +114,13 @@ def train_simulation():
     # UMAPの計算器（2次元に圧縮）
     reducer = umap.UMAP(n_components=2, random_state=42)
 
+    # --- 【追加】ウォームアップ処理 ---
+    # 初回のコンパイル（翻訳作業）をここで済ませておく
+    # 10個のサンプル、5つの特徴量（隠れ層の数と同じ）のダミーデータを作成
+    dummy_data = np.random.rand(10, 5)
+    reducer.fit_transform(dummy_data)
+    # --------------------------------
+
     while True:
         if is_running:
             # 1. 順伝播（予測）
