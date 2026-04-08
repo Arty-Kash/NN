@@ -146,24 +146,6 @@ const yPlotScale = d3.scaleLinear().domain([0, 1]).range([plotHeight - plotMargi
 // 星形（テストデータ用）のジェネレーター
 const starGenerator = d3.symbol().type(d3.symbolStar).size(100);
 
-/*
-// 軸を描画するためのグループを作成
-const g = plotSvg.append("g")
-    .attr("transform", `translate(${plotMargin.left},${plotMargin.top})`);
-
-// 初期状態の軸（0.0〜1.0 の仮の範囲）
-const xScale = d3.scaleLinear().domain([0, 1]).range([0, plotWidth - plotMargin.left - plotMargin.right]);
-const yScale = d3.scaleLinear().domain([0, 1]).range([plotHeight - plotMargin.top - plotMargin.bottom, 0]);
-
-const xAxis = g.append("g")
-    .attr("class", "x-axis")
-    .attr("transform", `translate(0, ${plotHeight - plotMargin.top - plotMargin.bottom})`)
-    .call(d3.axisBottom(xScale));
-
-const yAxis = g.append("g")
-    .attr("class", "y-axis")
-    .call(d3.axisLeft(yScale));
-*/
 
 
 // 3. 右下エリア
@@ -282,28 +264,3 @@ d3.select("#train-btn").on("click", function() {
 });
 
 
-/*
-Fetchのデータ更新ループ
-async function update() {
-    try {
-        const res = await fetch('/status');
-        const data = await res.json();
-
-        // テキスト更新
-        document.getElementById('epoch').innerText = data.epoch;
-        document.getElementById('loss').innerText = data.loss.toFixed(4);
-
-        // 重みに基づいてリンクをアニメーション更新
-        linkElements
-            .transition().duration(300)
-            .attr("stroke-width", (d, i) => Math.abs(data.weights[i]) * 8 + 1)
-            .attr("stroke", (d, i) => data.weights[i] > 0 ? "#4285f4" : "#ea4335");
-
-    } catch (err) {
-        console.error("Fetch error:", err);
-    }
-}
-
-// 0.5秒ごとにAPIを叩く
-setInterval(update, 500);
-*/
