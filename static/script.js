@@ -278,7 +278,7 @@ d3.select("#train-btn").on("click", function() {
            .classed("btn-stop", false);
 
         // 【追加】停止した瞬間に最新の予測結果を取得して表示
-        updatePredictions();
+        // updatePredictions();
     }
 });
 
