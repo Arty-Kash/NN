@@ -7,6 +7,7 @@ import numpy as np
 import json
 import asyncio
 from sklearn.datasets import load_iris
+import umap
 
 app = FastAPI()
 
@@ -98,6 +99,7 @@ state = {
     "epoch": 0,
     "loss": 1.0,
     "weights": initial_weights
+    "umap_coords": [] # 150個の [x, y] リストが入る
 }
 
 is_running = False
@@ -108,6 +110,9 @@ def train_simulation():
     train_y_onehot = np.eye(3)[train_y]
     
     learning_rate = 0.1 # 学習率
+
+    # UMAPの計算器（2次元に圧縮）
+    reducer = umap.UMAP(n_components=2, random_state=42)
 
     while True:
         if is_running:
@@ -127,6 +132,23 @@ def train_simulation():
             # 現在の重みをリスト化して反映
             state["weights"] = np.concatenate([nn_model.w1.flatten(), nn_model.w2.flatten()]).tolist()
         
+            # --- UMAP計算ロジック（50エポックごと） ---
+            if state["epoch"] % 50 == 0:
+                # 全150サンプルの隠れ層（a1）の出力を取得
+                # ※forwardを呼ぶとインスタンスの self.a1 が更新される
+                nn_model.forward(shuffled_x)
+                hidden_outputs = nn_model.a1 # (150, 5) の行列
+                
+                # UMAPで (150, 5) -> (150, 2) に圧縮
+                embedding = reducer.fit_transform(hidden_outputs)
+                
+                # 0〜1の範囲に正規化（描画しやすくするため）
+                min_val = embedding.min(axis=0)
+                max_val = embedding.max(axis=0)
+                normalized = (embedding - min_val) / (max_val - min_val + 1e-8)
+                
+                state["umap_coords"] = normalized.tolist()
+
         time.sleep(0.1) # 学習スピードを少し上げるために待機時間を短縮
 
         

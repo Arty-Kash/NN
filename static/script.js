@@ -5,11 +5,6 @@ const svg = d3.select("#viz");
 // ネットワーク構成 (入力4, 隠れ5, 出力3)
 const layerSizes = [4, 5, 3];
 
-
-
-
-// 1. 左エリア
-
 // 品種の色の定義（共通で使用）
 const speciesColors = {
     "setosa": "#4285f4",     // 青
@@ -17,11 +12,21 @@ const speciesColors = {
     "virginica": "#34a853"   // 緑
 };
 
+
+// 0. 状態管理用の変数（追加） ---
+// サーバーから取得した150件の全データをここに保持し、いつでも参照できるようにします
+let irisRecords = [];
+
+
+// 1. 左エリア
 // Irisデータの取得と表示（起動時に一度だけ実行）
 async function loadIrisData() {
     try {
         const res = await fetch('/iris-data');
         const data = await res.json();
+
+        // 【重要】取得したデータをグローバルな変数に保存
+        irisRecords = data;
 
         // 左エリアを取得してテーブルを作成
         const leftArea = d3.select("#left-area");
@@ -61,22 +66,13 @@ async function loadIrisData() {
 
         // データの表示（150行分）
         const tbody = table.append("tbody");
-        data.forEach((d, i) => {
+        irisRecords.forEach((d, i) => {
             const row = tbody.append("tr").datum(d);
             row.append("td").text(d.sepal_length.toFixed(1));
             row.append("td").text(d.sepal_width.toFixed(1));
             row.append("td").text(d.petal_length.toFixed(1));
             row.append("td").text(d.petal_width.toFixed(1));
             row.append("td").text(d.species).style("color", speciesColors[d.species]).style("font-weight", "bold");
-
-            /*
-            // 品種名に色を付ける
-            row.append("td")
-                .text(d.species)
-                .style("color", speciesColors[d.species]) // 定義した色を適用
-                .style("font-weight", "bold");
-            // row.append("td").text(d.species);
-            */
 
             // 推論列の作成
             const predTd = row.append("td").attr("class", "prediction-text");
@@ -143,6 +139,14 @@ const plotSvg = d3.select("#right-top-area")
     .style("border", "1px solid #ccc")
     .style("margin", "0 20px 20px 20px"); // 上 0, 右 20, 下 20, 左 20
 
+// 0〜1の座標をSVGサイズに変換するスケール
+const xPlotScale = d3.scaleLinear().domain([0, 1]).range([plotMargin.left, plotWidth - plotMargin.right]);
+const yPlotScale = d3.scaleLinear().domain([0, 1]).range([plotHeight - plotMargin.bottom, plotMargin.top]);
+
+// 星形（テストデータ用）のジェネレーター
+const starGenerator = d3.symbol().type(d3.symbolStar).size(100);
+
+/*
 // 軸を描画するためのグループを作成
 const g = plotSvg.append("g")
     .attr("transform", `translate(${plotMargin.left},${plotMargin.top})`);
@@ -159,7 +163,7 @@ const xAxis = g.append("g")
 const yAxis = g.append("g")
     .attr("class", "y-axis")
     .call(d3.axisLeft(yScale));
-
+*/
 
 
 // 3. 右下エリア
@@ -222,6 +226,27 @@ eventSource.onmessage = (event) => {
         .transition().duration(300)
         .attr("stroke-width", (d, i) => Math.abs(data.weights[i]) * 8 + 1)
         .attr("stroke", (d, i) => data.weights[i] > 0 ? "#4285f4" : "#ea4335");
+
+    // --- UMAPプロットの更新（修正） ---
+    if (data.umap_coords && data.umap_coords.length > 0) {
+        const dots = plotSvg.selectAll(".dot")
+            .data(data.umap_coords);
+
+        dots.enter()
+            .append("path")
+            .attr("class", "dot")
+            .merge(dots)
+            .transition().duration(500)
+            .attr("transform", (d) => `translate(${xPlotScale(d[0])}, ${yPlotScale(d[1])})`)
+            .attr("d", (d, i) => {
+                // 保存しておいた irisRecords から属性を直接参照する
+                const record = irisRecords[i];
+                return record.is_test ? starGenerator() : d3.symbol().type(d3.symbolCircle).size(64)();
+            })
+            .attr("fill", (d, i) => speciesColors[irisRecords[i].species])
+            .attr("stroke", "#333")
+            .attr("stroke-width", 1);
+    }
 };
 
 eventSource.onerror = (err) => {
