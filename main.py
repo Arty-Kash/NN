@@ -98,7 +98,7 @@ initial_weights = np.concatenate([nn_model.w1.flatten(), nn_model.w2.flatten()])
 state = {
     "epoch": 0,
     "loss": 1.0,
-    "weights": initial_weights
+    "weights": initial_weights, 
     "umap_coords": [] # 150個の [x, y] リストが入る
 }
 
