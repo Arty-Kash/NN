@@ -144,9 +144,9 @@ const xPlotScale = d3.scaleLinear().domain([0, 1]).range([plotMargin.left, plotW
 const yPlotScale = d3.scaleLinear().domain([0, 1]).range([plotHeight - plotMargin.bottom, plotMargin.top]);
 
 // 星形（テストデータ用）のジェネレーター
-const starGenerator = d3.symbol().type(d3.symbolStar).size(100)
-    .attr("stroke-width", 2)
-    .attr("stroke", black);
+const starGenerator = d3.symbol().type(d3.symbolStar).size(100);
+//    .attr("stroke-width", 2)
+//    .attr("stroke", black);
 
 
 // 3. 右下エリア
