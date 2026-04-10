@@ -5,7 +5,7 @@ const width = 600;
 const height = 400;
 const svg = d3.select("#viz");  // index.htmlからNNアニメ描画のID（viz）を取得
 
-// ネットワーク構成 (入力4, 隠れ5, 出力3)
+// NN構成 (入力4, 隠れ5, 出力3)
 const layerSizes = [4, 5, 3];
 
 // 品種の色の定義（共通で使用）
@@ -87,7 +87,7 @@ async function loadIrisData() {
             }
         });
 
-        // 初回起動時の予測結果（案A：デタラメな予測）を表示
+        // 初回起動時の予測結果（デタラメな予測）を表示
         updatePredictions();
 
     } catch (err) {
@@ -211,7 +211,7 @@ eventSource.onmessage = (event) => {
         .attr("stroke-width", (d, i) => Math.abs(data.weights[i]) * 8 + 1)
         .attr("stroke", (d, i) => data.weights[i] > 0 ? "#4285f4" : "#ea4335");
 
-    // --- UMAPプロットの更新（修正） ---
+    // --- UMAPプロットの更新 ---
     if (data.umap_coords && data.umap_coords.length > 0) {
         // 最初のデータが届いたらLoadingを消す
         const loadingOverlay = d3.select("#loading-overlay");
