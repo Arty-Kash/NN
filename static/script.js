@@ -1,3 +1,5 @@
+// # Frontend of a sample program for a simple NN training process visualization
+
 const width = 600;
 const height = 400;
 const svg = d3.select("#viz");
@@ -281,5 +283,3 @@ d3.select("#train-btn").on("click", function() {
         // updatePredictions();
     }
 });
-
-

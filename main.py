@@ -1,3 +1,6 @@
+# Backend of a sample program for a simple NN training process visualization
+# 2026.Apr
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
@@ -34,6 +37,7 @@ test_x  = groups_x[0]
 test_y  = groups_y[0]
 train_x = np.concatenate(groups_x[1:])
 train_y = np.concatenate(groups_y[1:])
+
 
 # --- 2. ニューラルネットワーククラスの定義 ---
 class NeuralNetwork:
@@ -90,8 +94,8 @@ class NeuralNetwork:
 # NNインスタンスの生成（入力4, 隠れ5, 出力3）
 nn_model = NeuralNetwork(input_size=4, hidden_size=5, output_size=3)
 
-# --- 3. 学習状態の管理 ---
 
+# --- 3. 学習状態の管理 ---
 # 重みの総数は 20 + 15 = 35本
 initial_weights = np.concatenate([nn_model.w1.flatten(), nn_model.w2.flatten()]).tolist()
 
@@ -100,7 +104,7 @@ state = {
     "loss": 1.0,
     "weights": initial_weights, 
     "umap_coords": [],  # 150個の [x, y] リストが入る
-    "predictions": []
+    "predictions": []   # 左エリアのIrisデータ表に表示する予測結果
 }
 
 is_running = False
@@ -112,18 +116,20 @@ def train_simulation():
     
     learning_rate = 0.1 # 学習率
 
+
+    # UMAPの初期状態を生成
     # UMAPの計算器（2次元に圧縮）
     reducer = umap.UMAP(n_components=2, random_state=42, n_jobs=1)
 
-    # --- 【追加】ウォームアップ処理 ---
+    # --- UMAPプロットをすぐに表示するためのウォームアップ処理 ---
+    #　　　下記、初期状態の計算をすることにしたので、ここは不要に。
     # 初回のコンパイル（翻訳作業）をここで済ませておく
     # 10個のサンプル、5つの特徴量（隠れ層の数と同じ）のダミーデータを作成
     #dummy_data = np.random.rand(20, 5)
     #reducer.fit_transform(dummy_data)
     # --------------------------------
 
-
-    # --- 【修正】初期状態の計算（ここを while の外で実行） ---
+    # --- 初期状態の計算 ---
     # 150サンプルの初期状態（デタラメな重み）での隠れ層出力を取得
     # nn_model.forward(shuffled_x)
     all_outputs = nn_model.forward(shuffled_x)
@@ -140,11 +146,14 @@ def train_simulation():
     # 初回の座標をセット
     state["umap_coords"] = normalized.tolist()
 
-    # 3. 【追加】初期状態の予測結果（30件分）を取得
+
+
+    # 推論結果の初期状態（30件分）を取得
     test_predictions_idx = np.argmax(all_outputs[:30], axis=1)
     test_pred_names = [iris.target_names[p] for p in test_predictions_idx]
     state["predictions"] = test_pred_names  # ここで予測もセット！
-    # ----------------------------------------------------
+
+
 
     while True:
         if is_running:
