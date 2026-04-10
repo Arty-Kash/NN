@@ -3,7 +3,7 @@
 
 const width = 600;
 const height = 400;
-const svg = d3.select("#viz");
+const svg = d3.select("#viz");  // index.htmlからNNアニメ描画のID（viz）を取得
 
 // ネットワーク構成 (入力4, 隠れ5, 出力3)
 const layerSizes = [4, 5, 3];
@@ -16,7 +16,7 @@ const speciesColors = {
 };
 
 
-// 0. 状態管理用の変数（追加） ---
+// 0. 状態管理用の変数
 // サーバーから取得した150件の全データをここに保持し、いつでも参照できるようにする
 let irisRecords = [];
 
@@ -121,7 +121,6 @@ async function updatePredictions(predictions = null) {
         console.error("Failed to update predictions:", err);
     }
 }
-
 
 // 実行
 loadIrisData();

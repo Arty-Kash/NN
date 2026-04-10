@@ -122,7 +122,7 @@ def train_simulation():
     reducer = umap.UMAP(n_components=2, random_state=42, n_jobs=1)
 
     # --- UMAPプロットをすぐに表示するためのウォームアップ処理 ---
-    #　　　下記、初期状態の計算をすることにしたので、ここは不要に。
+    #　　　　→ 下記、初期状態の計算をすることにしたので、ここは不要に。
     # 初回のコンパイル（翻訳作業）をここで済ませておく
     # 10個のサンプル、5つの特徴量（隠れ層の数と同じ）のダミーデータを作成
     #dummy_data = np.random.rand(20, 5)
@@ -217,7 +217,7 @@ async def startup_event():
     thread = threading.Thread(target=train_simulation, daemon=True)
     thread.start()
 
-# --- APIエンドポイント ---
+# --- APIエンドポイント（フロントエンドからの呼び出し窓口） ---
 @app.get("/iris-data")
 async def get_iris_data():
     # 150行分のデータを整形してリスト形式で返す
