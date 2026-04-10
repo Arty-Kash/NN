@@ -1,4 +1,5 @@
-// # Frontend of a sample program for a simple NN training process visualization
+// Frontend of a Web-app for a simple NN training process visualization
+// 2026.Apr
 
 const width = 600;
 const height = 400;
@@ -16,11 +17,11 @@ const speciesColors = {
 
 
 // 0. 状態管理用の変数（追加） ---
-// サーバーから取得した150件の全データをここに保持し、いつでも参照できるようにします
+// サーバーから取得した150件の全データをここに保持し、いつでも参照できるようにする
 let irisRecords = [];
 
 
-// 1. 左エリア
+// 1. 左エリア：Irisデータと推論結果の表示
 // Irisデータの取得と表示（起動時に一度だけ実行）
 async function loadIrisData() {
     try {
@@ -39,7 +40,6 @@ async function loadIrisData() {
             .style("margin-left" , "20px")
             .style("border-collapse", "collapse")
             .style("font-size", "0.8rem");
-
 
         // Irisテーブルのヘッダーの作成．特徴名をボタンに
         const header = table.append("thead").append("tr");
@@ -128,8 +128,7 @@ loadIrisData();
 
 
 
-// 2. 右上エリア
-
+// 2. 右上エリア：UMAPプロット
 // 2次元プロットの初期化
 const plotWidth = 600;
 const plotHeight = 400;
@@ -152,7 +151,7 @@ const yPlotScale = d3.scaleLinear().domain([0, 1]).range([plotHeight - plotMargi
 const starGenerator = d3.symbol().type(d3.symbolStar).size(100);
 
 
-// 3. 右下エリア
+// 3. 右下エリア：NNアニメーション
 const nodes = [];
 const links = [];
 
@@ -207,7 +206,7 @@ eventSource.onmessage = (event) => {
     document.getElementById('epoch').innerText = data.epoch;
     document.getElementById('loss').innerText = data.loss.toFixed(4);
 
-    // 重みに基づいてリンクをアニメーション更新
+    // 重みに基づいてNNリンクをアニメーション更新
     linkElements
         .transition().duration(300)
         .attr("stroke-width", (d, i) => Math.abs(data.weights[i]) * 8 + 1)
@@ -234,7 +233,7 @@ eventSource.onmessage = (event) => {
             .transition().duration(500)
             .attr("transform", (d) => `translate(${xPlotScale(d[0])}, ${yPlotScale(d[1])})`)
             .attr("d", (d, i) => {
-                // 保存しておいた irisRecords から属性を直接参照する
+                // 保存しておいた irisRecords から属性を直接参照し、テストデータは星印、学習データは丸印に
                 const record = irisRecords[i];
                 return record.is_test ? starGenerator() : d3.symbol().type(d3.symbolCircle).size(64)();
             })
@@ -242,12 +241,12 @@ eventSource.onmessage = (event) => {
             //.attr("stroke", "#333")
             .attr("stroke", (d, i) => {
                 const record = irisRecords[i];
-                return record.is_test ? "#000" : "#444";
+                return record.is_test ? "#000" : "#444";    // 星印の枠線を黒に
             })
             //.attr("stroke-width", 1);
             .attr("stroke-width", (d, i) => {
                 const record = irisRecords[i];
-                return record.is_test ? 2 : 1;
+                return record.is_test ? 2 : 1;                  // 星印の枠線を太く
             })
     }
 };
@@ -263,23 +262,18 @@ d3.select("#train-btn").on("click", function() {
     const btn = d3.select(this);
     
     if (btn.text() === "学習開始") {
-        // サーバーに開始を命令
-        fetch('/start', { method: 'POST' });
-
-        // 停止状態へ移行
-        btn.text("学習停止")
+        fetch('/start', { method: 'POST' });    // サーバーに開始を命令
+        btn.text("学習停止")        // ボタン表示を変更して停止状態へ移行
            .classed("btn-start", false)
            .classed("btn-stop", true);
     } else {
-        // サーバーに停止を命令
-        fetch('/stop', { method: 'POST' });
-        
-        // 開始状態へ移行
-        btn.text("学習開始")
+        fetch('/stop', { method: 'POST' });     // サーバーに停止を命令
+        btn.text("学習開始")        // ボタン表示を変更して開始状態へ移行
            .classed("btn-start", true)
            .classed("btn-stop", false);
 
-        // 【追加】停止した瞬間に最新の予測結果を取得して表示
+        // 停止した瞬間に最新の予測結果を取得して表示
+        // （50エポックごとの更新にしたので不要に）
         // updatePredictions();
     }
 });

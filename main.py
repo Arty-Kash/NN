@@ -1,4 +1,4 @@
-# Backend of a sample program for a simple NN training process visualization
+# Backend of a Web-app for a simple NN training process visualization
 # 2026.Apr
 
 from fastapi import FastAPI
