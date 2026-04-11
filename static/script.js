@@ -229,6 +229,15 @@ eventSource.onmessage = (event) => {
             .append("path")
             .attr("class", "dot")
             .merge(dots)
+
+            // --- テストデータ（星印）を上に描画 ---
+            .each(function(d, i) {
+                // i番目のデータがテスト用なら、その要素を「最前面（raise）」に移動する
+                if (irisRecords[i].is_test) {
+                    d3.select(this).raise();
+                }
+            })
+
             .transition().duration(500)
             .attr("transform", (d) => `translate(${xPlotScale(d[0])}, ${yPlotScale(d[1])})`)
             .attr("d", (d, i) => {
