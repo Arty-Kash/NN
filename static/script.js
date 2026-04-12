@@ -230,7 +230,7 @@ eventSource.onmessage = (event) => {
             .attr("class", "dot")
             .merge(dots)
 
-            // --- テストデータ（星印）を上に描画 ---
+            // --- テストデータ（星印）を，視認性を上げるため，上に描画 ---
             .each(function(d, i) {
                 // i番目のデータがテスト用なら、その要素を「最前面（raise）」に移動する
                 if (irisRecords[i].is_test) {
