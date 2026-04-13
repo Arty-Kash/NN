@@ -69,7 +69,8 @@ async function loadIrisData() {
         // データの表示（150行分）
         const tbody = table.append("tbody");
         irisRecords.forEach((d, i) => {
-            const row = tbody.append("tr").datum(d);
+            // const row = tbody.append("tr").datum(d);
+            const row = tbody.insert("tr", ":first-child").datum(d);
             row.append("td").text(d.sepal_length.toFixed(1));
             row.append("td").text(d.sepal_width.toFixed(1));
             row.append("td").text(d.petal_length.toFixed(1));
@@ -77,7 +78,8 @@ async function loadIrisData() {
             row.append("td").text(d.species).style("color", speciesColors[d.species]).style("font-weight", "bold");
 
             // 推論列の作成
-            const predTd = row.append("td").attr("class", "prediction-text");
+            // const predTd = row.append("td").attr("class", "prediction-text");
+            const predTd = row.insert("tr", ":first-child").attr("class", "prediction-text");
             if (d.is_test) {
                 // テストデータ用：後で書き換えるためにクラスを付与
                 predTd.attr("class", "prediction-text prediction-cell").text("...");
