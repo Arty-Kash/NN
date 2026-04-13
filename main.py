@@ -37,6 +37,11 @@ test_x  = groups_x[0]
 test_y  = groups_y[0]
 train_x = np.concatenate(groups_x[1:])
 train_y = np.concatenate(groups_y[1:])
+# 第1～4グループ（120件）を学習用、第5グループ（30件）をテスト用とする
+# train_x = np.concatenate(groups_x[0:4])
+# train_y = np.concatenate(groups_y[0:4])
+# test_x = groups_x[4]
+# test_y = groups_y[4]
 
 
 # --- 2. ニューラルネットワーククラスの定義 ---
