@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>NN Visualization</title>
+    
+    <!-- Data Driven Documentライブラリ：動的コンテンツの描画-->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f4f4f9; }
+        
+        /* アプリ全体を囲むコンテナ：左右分割 */
+        #app-container {
+            display: flex;
+            width: 100%;
+            min-height: 900px; /* 全体を大きく設定 */
+        }
+
+        /* 左エリア */
+        #left-area {
+            /*width: 600px;*/
+            flex: 1;
+            border-right: 1px solid gray;
+        }
+
+        /* 推論が外れた（不正解）時の背景色 */
+        .bg-wrong {
+            background-color: #ffcdd2; /* 薄い赤色 */
+        }
+
+        /* 推論列（Prediction）を少し強調するためのスタイル */
+        .prediction-text {
+            font-weight: bold;
+        }
+
+        /* ヘッダーボタンの基本スタイル */
+        .header-button {
+            cursor: pointer;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            text-align: left;
+            display: block; /* セルいっぱいに広げる */
+        }
+        /* 選択されている時の色（青） */
+        .selected {
+            background-color: #4285f4;
+            color: white;
+            border-color: #3367d6;
+        }
+        /* 選択されていない時の色（グレー） */
+        .unselected {
+            background-color: #e0e0e0;
+            color: #757575;
+        }
+
+
+        /* 右半分を管理するコンテナ：上下分割 */
+        #right-container {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 右上エリア */
+        #right-top-area {
+         /* flex: 1; */
+            height: 500px;
+            text-align: center;
+            border-bottom: 1px solid gray;
+            position: relative; /* 子要素（Loading）の基準点になるために必須！ */
+        }
+
+        #loading-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* これが重要！文字自身の幅の半分だけ戻す */
+            font-weight: bold;
+            color: #888;
+            pointer-events: none; /* 下にあるSVGの操作を邪魔しないため */
+        }
+
+        /* 右下エリア：ここにNNを描画 */
+        #right-bottom-area {
+            flex: 1;
+            text-align: center;
+        }
+        #info-header {
+            margin: 5px;
+            font-size: 1.2rem;
+        }
+        /* 学習ボタンの基本スタイル */
+        #train-btn {
+            cursor: pointer;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        /* 開始状態（青） */
+        .btn-start {
+            background-color: #4285f4;
+        }
+        /* 停止状態（赤） */
+        .btn-stop {
+            background-color: #ea4335;
+        }   
+
+        /* NNのパーツ */
+        #viz {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .node {
+            stroke: #333;
+            stroke-width: 2px; fill: white;
+        }
+        .link {
+            stroke-opacity: 0.6;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <!-- 左エリア -->
+        <div id="left-area"></div>
+
+        <!-- 右半分のコンテナ -->
+        <div id="right-container">
+            <!-- 右上エリア -->
+            <div id="right-top-area">
+                <h3 id="plot-title" style="margin: 30px 0 5px 0;">Irisデータ分析　 UMAPプロット</h3>
+                <div id="loading-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; color: #888;">
+                    UMAPを準備中（数秒かかります）...
+                </div>
+            </div>
+
+            <!-- 右下エリア -->
+            <div id="right-bottom-area">
+                <div id="info-header">  <!--タイトルとepochなどを1行に-->
+                    <span style="font-weight: bold; margin-right: 15px;">NN学習プロセス可視化</span>
+                    Epoch: <span id="epoch">0</span> | Loss: <span id="loss">0.000</span>
+
+                    <!-- 【追加】学習制御用のボタン（機能は未実装） -->
+                    <button id="train-btn" class="btn-start" style="margin-left: 20px;">学習開始</button>
+                </div>
+                <svg id="viz" width="600" height="400"></svg>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/script.js"></script>
+</body>
+</html>
