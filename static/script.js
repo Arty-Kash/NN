@@ -69,8 +69,11 @@ async function loadIrisData() {
         // データの表示（150行分）
         const tbody = table.append("tbody");
         irisRecords.forEach((d, i) => {
-            const row = tbody.append("tr").datum(d);
-            // const row = tbody.insert("tr", ":first-child").datum(d);
+
+            // 表の最下部に表示されているテストデータを、最上部に表示させるために反転
+            // const row = tbody.append("tr").datum(d);
+            const row = tbody.insert("tr", ":first-child").datum(d);
+
             row.append("td").text(d.sepal_length.toFixed(1));
             row.append("td").text(d.sepal_width.toFixed(1));
             row.append("td").text(d.petal_length.toFixed(1));
@@ -86,6 +89,7 @@ async function loadIrisData() {
                 // 学習データ用：「T」を表示
                 predTd.text("T").style("text-align", "center").style("color", "#ccc");
             }
+            
         });
 
         // 初回起動時の予測結果（デタラメな予測）を表示
@@ -105,6 +109,9 @@ async function updatePredictions(predictions = null) {
             const res = await fetch('/predict');
             predictions = await res.json();
         }
+
+        // 表を反転表示させているので、推論結果も反転
+        predictions.reverse();
         
         // 2. 画面のセルを更新する（ここはこれまでのロジックを再利用）
         const cells = d3.selectAll(".prediction-cell");

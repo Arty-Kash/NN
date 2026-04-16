@@ -33,15 +33,20 @@ groups_y = np.array_split(shuffled_y, 5)
 
 # ステップ2以降で使用するための変数定義
 # 第1グループ（30件）をテスト用、第2〜5グループ（120件）を学習用とする
-test_x  = groups_x[0]
-test_y  = groups_y[0]
-train_x = np.concatenate(groups_x[1:])
-train_y = np.concatenate(groups_y[1:])
+# test_x  = groups_x[0]
+# test_y  = groups_y[0]
+# train_x = np.concatenate(groups_x[1:])
+# train_y = np.concatenate(groups_y[1:])
+
 # 第1～4グループ（120件）を学習用、第5グループ（30件）をテスト用とする
-# train_x = np.concatenate(groups_x[0:4])
-# train_y = np.concatenate(groups_y[0:4])
-# test_x = groups_x[4]
-# test_y = groups_y[4]
+# テストデータを第5グループにしておくと、UMAPプロットで、テストデータ（星印）が
+# 最後（最上部）に表示されて視認性が上がる。
+# しかし、左エリアの表では、テストデータが最下部に表示されてスクロールしないと
+# 見えないので、script.js内で、表の上下を反転させている。
+train_x = np.concatenate(groups_x[0:4])
+train_y = np.concatenate(groups_y[0:4])
+test_x = groups_x[4]
+test_y = groups_y[4]
 
 
 # --- 2. ニューラルネットワーククラスの定義 ---
@@ -154,7 +159,10 @@ def train_simulation():
 
 
     # 推論結果の初期状態（30件分）を取得
-    test_predictions_idx = np.argmax(all_outputs[:30], axis=1)
+    # テストデータが第1グループの場合：
+    # test_predictions_idx = np.argmax(all_outputs[:30], axis=1)
+    # テストデータが第5グループの場合：
+    test_predictions_idx = np.argmax(all_outputs[120:], axis=1)
     test_pred_names = [iris.target_names[p] for p in test_predictions_idx]
     state["predictions"] = test_pred_names  # ここで予測もセット！
 
@@ -206,7 +214,12 @@ def train_simulation():
 
                 # 3. 【追加】テストデータ（最初の30件）の予測結果を取得
                 # all_outputs[:30] はテストデータの30行分の確率（ソフトマックス出力）
-                test_predictions_idx = np.argmax(all_outputs[:30], axis=1)
+
+                # テストデータが第1グループの場合
+                # test_predictions_idx = np.argmax(all_outputs[:30], axis=1)
+                # テストデータが第5グループの場合
+                test_predictions_idx = np.argmax(all_outputs[120:], axis=1)
+                
                 # インデックス(0,1,2)を品種名("setosa"等)に変換
                 test_pred_names = [iris.target_names[p] for p in test_predictions_idx]
                 
@@ -229,9 +242,9 @@ async def get_iris_data():
     combined_data = []
     for i in range(len(shuffled_x)):
         # 150件のうち、30番目まで（第１グループ）をテスト用(is_test=True)とする
-        is_test = i < 30
+        # is_test = i < 30
         # 150件のうち、120番目以降（最後30件）をテスト用とする
-        # is_test = i >= 120
+        is_test = i >= 120
         
         combined_data.append({
             "sepal_length": shuffled_x[i][0],
