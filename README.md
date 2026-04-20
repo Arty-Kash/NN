@@ -2,7 +2,7 @@
 A sample program to visualize Neural Netwoak training process.
 
 
-## 実行方法
+## Codespacesでの実行方法
 ターミナルで、下記コマンドを実行し、ブラウザを開く
 - bash
 - pip install -r requirements.txt
