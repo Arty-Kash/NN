@@ -16,6 +16,12 @@ A sample program to visualize Neural Netwoak training process.
 <br>
 <br>
 
+## PCローカルでの実行方法
+適当なフォルダを作成してコードをその配下へ．
+- python3.12 -m venv venv
+- source venv/bin/activate
+- pip install -r requirements.txt
+- uvicorn main:app --reload
 ***
 
 <br>
